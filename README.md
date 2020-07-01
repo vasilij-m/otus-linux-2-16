@@ -98,14 +98,14 @@ type=SYSCALL msg=audit(1593204782.188:889): arch=c000003e syscall=189 success=ye
 
 **2. Отправлять все аудит логи на сервер log.**
 
-Чтобы логи auditd писались на удаленный rsyslog сервер, нужно установить пакет audispd-plugins как на клиент web, так и на сервер log. Затем изменить следующие опции в конфиг файлах:
+Чтобы логи auditd писались на удаленный rsyslog сервер, нужно установить пакет `audispd-plugins` как на клиент web, так и на сервер log. Затем изменить следующие опции в конфиг файлах:
 
-- в файле /etc/audisp/audisp-remote.conf:
+- в файле `/etc/audisp/audisp-remote.conf`:
 ```
 	remote_server = 192.168.10.20
 	port = 514
 ```
-- в файле /etc/audisp/plugins.d/au-remote.conf:
+- в файле `/etc/audisp/plugins.d/au-remote.conf`:
 ```
 	active = yes
 ```
@@ -113,10 +113,15 @@ type=SYSCALL msg=audit(1593204782.188:889): arch=c000003e syscall=189 success=ye
 ```
 	write_logs = no # чтобы логи не писались локально, а только на удаленный сервер
 ```
-На самом сервере log разрешить прием логов, например, по udp:
+На самом сервере log разрешить прием логов в файле `/etc/rsyslog.conf`:
 ```
+	# Provides UDP syslog reception
 	$ModLoad imudp
 	$UDPServerRun 514
+
+	# Provides TCP syslog reception
+	$ModLoad imtcp
+	$InputTCPServerRun 514
 ```
 
 Изменим порт нжинкса в конфиг-файле и проверим логи auditd:
